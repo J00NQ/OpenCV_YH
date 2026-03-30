@@ -11,7 +11,7 @@ overlay = img.copy()
 ix, iy = -1, -1
 drawing = False
 font = cv.FONT_HERSHEY_SIMPLEX
-
+ROI = []
 # 마우스 콜백 함수 정의
 def draw(event, x, y, flags, param):
     # LBUTTONDOWN: 드래그 시작, 시작점(ix, iy) 저장
@@ -20,21 +20,35 @@ def draw(event, x, y, flags, param):
     if event == cv.EVENT_LBUTTONDOWN:
         drawing = True
         ix, iy = x, y
+
     # MOUSEMOVE: 드래그 중이면
     elif event == cv.EVENT_MOUSEMOVE:
         if drawing:
         #     원본에서 img 복원 (이전 사각형 제거)
             overlay = img.copy()
+
+            x1, y1 = min(ix, x), min(iy, y)
+            x2, y2 = max(ix, x), max(iy, y)
+            text_y = max(y1 - 10, 20)
+
         #     현재 위치까지 초록색 사각형 그리기 (두께 2)
-            cv.rectangle(overlay, (ix, iy), (x, y), (0, 255, 0), 2)
-            cv.putText(overlay, "FACE", (ix, y), font, 2, 0, 2)
+            cv.rectangle(overlay, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv.putText(overlay, "FACE", (x1, text_y), font, 2, 0, 2)
+
     # LBUTTONUP: 드래그 끝
     elif event == cv.EVENT_LBUTTONUP:
         drawing = False
+        x1, y1 = min(ix, x), min(iy, y)
+        x2, y2 = max(ix, x), max(iy, y)
+
+        text_y = max(y1 - 10, 20)
     #     최종 사각형 그리기
-        cv.rectangle(img, (ix, iy), (x, y), (0, 255, 0), 2)
+        cv.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
     #     사각형 위에 "FACE" 텍스트 넣기
-        cv.putText(img, "FACE", (ix, y), font, 2, 0, 2)
+        cv.putText(img, "FACE", (x1, text_y), font, 2, 0, 2)
+
+        ROI = img[y1:y2, x1:x2]
+        cv.imwrite("./captures/ROI_preview.png", ROI)
 
 # 창 생성 + 마우스 콜백 등록
 cv.namedWindow('image')
@@ -53,6 +67,7 @@ while True:
     # 's' → my_id_card_final.png로 저장 후 break
     if k == ord('s'):
         cv.imwrite("./captures/my_id_card_final.png", img)
+        cv.imwrite("./captures/ROI.png", ROI)
         print("저장 완료!")
     # esc or 'q' → break
     elif k == 27 or k == ord('q'):
