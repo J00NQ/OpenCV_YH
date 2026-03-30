@@ -11,12 +11,15 @@ overlay = img.copy()
 ix, iy = -1, -1
 drawing = False
 font = cv.FONT_HERSHEY_SIMPLEX
-ROI = []
+ROI = None
+
 # 마우스 콜백 함수 정의
 def draw(event, x, y, flags, param):
     # LBUTTONDOWN: 드래그 시작, 시작점(ix, iy) 저장
-    global ix, iy, drawing, overlay
+    global ix, iy, drawing, overlay, ROI
+    # Region Of Interest (관심 영역)
     
+
     if event == cv.EVENT_LBUTTONDOWN:
         drawing = True
         ix, iy = x, y
@@ -48,7 +51,7 @@ def draw(event, x, y, flags, param):
         cv.putText(img, "FACE", (x1, text_y), font, 2, 0, 2)
 
         ROI = img[y1:y2, x1:x2]
-        cv.imwrite("./captures/ROI_preview.png", ROI)
+        cv.imshow("ROI", ROI)
 
 # 창 생성 + 마우스 콜백 등록
 cv.namedWindow('image')
@@ -67,7 +70,8 @@ while True:
     # 's' → my_id_card_final.png로 저장 후 break
     if k == ord('s'):
         cv.imwrite("./captures/my_id_card_final.png", img)
-        cv.imwrite("./captures/ROI.png", ROI)
+        if ROI is not None:
+            cv.imwrite("./captures/ROI.png", ROI)
         print("저장 완료!")
     # esc or 'q' → break
     elif k == 27 or k == ord('q'):
