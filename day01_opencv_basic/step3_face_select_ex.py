@@ -50,7 +50,7 @@ def draw(event, x, y, flags, param):
     #     사각형 위에 "FACE" 텍스트 넣기
         cv.putText(img, "FACE", (x1, text_y), font, 2, 0, 2)
 
-        ROI = img[y1:y2, x1:x2]
+        ROI = img[y1:y2, x1:x2].copy()
         cv.imshow("ROI", ROI)
 
 # 창 생성 + 마우스 콜백 등록
@@ -73,6 +73,9 @@ while True:
         if ROI is not None:
             cv.imwrite("./captures/ROI.png", ROI)
         print("저장 완료!")
+    # 'c'버튼으로 화면 클리어
+    elif k == ord('c'):
+        img = cv.imread("./captures/my_id_card.png")
     # esc or 'q' → break
     elif k == 27 or k == ord('q'):
         break
