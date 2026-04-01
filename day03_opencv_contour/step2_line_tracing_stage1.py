@@ -32,7 +32,7 @@ while True:
 
     # 이진화 (Otsu 사용)
     # _, binary = cv.threshold(gray, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
-    _, binary = cv.threshold(gray, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
+    _, binary = cv.threshold(gray, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)
 
     # 컨투어 검출
     # contours, _ = cv.findContours(binary, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
@@ -61,7 +61,7 @@ while True:
     #     if M["m00"] > 0:
     #         cx = int(M["m10"] / M["m00"])
     #         cy = int(M["m01"] / M["m00"])
-    if largest_cnt is not None and max_area > 100:
+    if largest_cnt is not None and max_area > 500:
         M = cv.moments(largest_cnt)
         if M["m00"] > 0:
             cx = int(M["m10"] / M["m00"])

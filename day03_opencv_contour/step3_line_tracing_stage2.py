@@ -26,7 +26,7 @@ while True:
 #     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 #     _, binary = cv.threshold(gray, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-    _, binary = cv.threshold(gray, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
+    _, binary = cv.threshold(gray, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)
     
 #     # --- 새로 추가: 노이즈 제거 ---
 #     # 메디안 필터
@@ -80,6 +80,7 @@ while True:
 #             # 각도 계산
 #             angle = np.arctan2(vy, vx) * 180 / np.pi
                 angle = np.arctan2(vy, vx) * 180 / np.pi
+                angle = angle[0]
 
 #             # --- 새로 추가: 제어신호 생성 ---
 #             frame_center_x = frame.shape[1] // 2
@@ -107,13 +108,13 @@ while True:
 #     binary_color = cv.cvtColor(binary, cv.COLOR_GRAY2BGR)
 #     result = np.hstack([binary_color, frame])
 #     cv.imshow('Line Tracing Stage 2', result)
-        binary_color = cv.cvtColor(binary, cv.COLOR_GRAY2BGR)
-        result = np.hstack([binary_color, frame])
-        cv.imshow('Line Tracing Stage 2', result)
+    binary_color = cv.cvtColor(binary, cv.COLOR_GRAY2BGR)
+    result = np.hstack([binary_color, frame])
+    cv.imshow('Line Tracing Stage 2', result)
 #     if cv.waitKey(1) & 0xFF == ord('q'):
 #         break
-        if cv.waitKey(1) & 0xFF == ord('q'):
-            break
+    if cv.waitKey(1) & 0xFF == ord('q'):
+        break
 # cap.release()
 # cv.destroyAllWindows()
 cap.release()
