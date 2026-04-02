@@ -84,8 +84,20 @@ if plate is not None:
     cv.putText(result, 'License Plate', (x, y-10),
                cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
     
+    plate_draw = plate.copy() 
+    plate_gray = cv.cvtColor(plate, cv.COLOR_BGR2GRAY)
+    _, plate_binary = cv.threshold(plate_gray, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)
+    cv.imshow('Debug 4: Plate Binary', plate_binary)
+
+    contours, _ = cv.findContours(plate_binary, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
+    for cnt in contours:
+        x_p, y_p, w_p, h_p = cv.boundingRect(cnt)
+        # 번호판 내 글자 크기 조건 (글자만 골라내기 위해 조정 가능)
+        if (h * 0.4 < h_p < h * 0.9) and (w_p < w * 0.3):  
+            cv.rectangle(plate_draw, (x_p, y_p), (x_p+w_p, y_p+h_p), (0, 255, 0), 2)
+            
     # 원본 + 추출된 번호판 표시
-    plate_resized = cv.resize(plate, (200, 100))
+    plate_resized = cv.resize(plate_draw, (200, 100))
     result_resized = cv.resize(result, (640, 480))
     
     cv.imshow('Original with Detection', result_resized)
