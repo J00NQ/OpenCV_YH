@@ -61,6 +61,7 @@ def onMouse(event, x, y, flags, param):
         #     # 결과 저장
             result = cv.warpPerspective(img, mtrx, (width, height))
             cv.imshow('scanned', result)
+            cv.imwrite(" scanned_document.png", result)
         #     # 초기화 (새로운 이미지 스캔 가능)
 
 
