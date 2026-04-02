@@ -10,8 +10,9 @@ win_name = "Document Scanning"
 img = None
 draw = None
 rows, cols = 0, 0
-pts_cnt = 0
-pts = np.zeros((4, 2), dtype=np.float32)
+# pts_cnt = 0
+# pts = np.zeros((4, 2), dtype=np.float32)
+save_cnt = 0
 
 # ============================================================
 # 마우스 콜백 함수
@@ -23,7 +24,7 @@ def onMouse(event, x, y, flags, param):
     2. 4개 점 수집 후 자동으로 좌상/우상/우하/좌하 판단
     3. 원근 변환 적용
     """
-    global pts_cnt, draw, pts, img
+    global pts_cnt, draw, pts, img, save_cnt
     
     if event == cv.EVENT_LBUTTONDOWN:
         # 1️⃣ 클릭한 위치에 원 표시
@@ -61,7 +62,8 @@ def onMouse(event, x, y, flags, param):
         #     # 결과 저장
             result = cv.warpPerspective(img, mtrx, (width, height))
             cv.imshow('scanned', result)
-            cv.imwrite(" scanned_document.png", result)
+            cv.imwrite(f" scanned_document{save_cnt}.png", result)
+            save_cnt += 1
         #     # 초기화 (새로운 이미지 스캔 가능)
 
 
@@ -87,6 +89,8 @@ while True:
     key = cv.waitKey(1) & 0xFF
 
     if key == ord('c'):
+        pts_cnt = 0
+        pts = np.zeros((4, 2), dtype=np.float32)
         img = frame.copy()
         draw = img.copy()
         cv.imshow(win_name, draw)
