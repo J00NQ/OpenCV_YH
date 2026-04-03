@@ -66,7 +66,7 @@ cv.createTrackbar("V_min", "trackbar", 80, 255, nothing)
 cv.createTrackbar("H_max", "trackbar", 85, 180, nothing)
 cv.createTrackbar("S_max", "trackbar", 255, 255, nothing)
 cv.createTrackbar("V_max", "trackbar", 255, 255, nothing)
-
+cv.createTrackbar("area_threshold", "trackbar", 1000, 10000, nothing)
 area_threshold = 1000
 
 while True:
@@ -111,6 +111,7 @@ while True:
     cv.imshow("raw_mask", raw_mask) # 노이즈 제거 전 비교를 위한 디버깅 코드
     area = cv.countNonZero(mask)
 
+    area_threshold = cv.getTrackbarPos("area_threshold", "trackbar")
     if area > area_threshold:
         status_text = f"DETECTED (Area: {area})"
         text_color = green
