@@ -3,7 +3,6 @@ import numpy as np
 import serial
 import time
 
-# TODO: 아두이노 시리얼 연결 (COM Port, Baudrate)
 try:
     ser = serial.Serial('COM5', 9600, timeout=1)
     print("아두이노 연결 성공 (COM5)")
@@ -13,18 +12,15 @@ except serial.SerialException as e:
     print("팁: 아두이노 IDE의 시리얼 모니터가 켜져 있는지 확인하고 닫아주세요.")
     exit()
 
-# TODO: 웹캠을 열기
 cap = cv.VideoCapture(0)
 if not cap.isOpened():
     print("camera not detected")
     ser.close()
     exit()
 
-# TODO: 색상 범위 설정 (과제 1에서 확인한 값)
 lower_color = np.array([35, 80, 80])
 upper_color = np.array([85, 255, 255])
 
-# TODO: 이전 상태 변수 초기화
 prev_status = None # None, 'O', 'C'
 area_threshold = 1000
 
@@ -33,21 +29,17 @@ cooldown_period = 5.0 # 5초 동안 열림 유지
 
 print("프로그램 시작 ('q'를 누르면 종료)")
 
-# TODO: 반복:
 while True:
     ret, frame = cap.read()
     if not ret:
         print("camera not detected")
         break
 
-    # HSV 색공간으로 변환 및 마스크 생성
     hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
     mask = cv.inRange(hsv, lower_color, upper_color)
 
-    # 마스크 픽셀 면적 계산
     area = cv.countNonZero(mask)
 
-    # 면적과 임계값 비교하여 상태 결정
     if area > area_threshold:
         current_status = 'O' # Open
         status_text = f"DETECTED (Area: {area})"
@@ -57,36 +49,42 @@ while True:
         status_text = f"NOT DETECTED (Area: {area})"
         text_color = (0, 0, 255) # 빨간색
 
-    # --- 쿨다운 로직 (O 명령 이후 5초 유지) ---
     elapsed_time = time.time() - last_command_time
     if prev_status == 'O' and current_status == 'C' and elapsed_time < cooldown_period:
-        # 아직 5초가 지나지 않았다면 'C' 명령을 유보하고 'O' 상태 유지
         current_status = 'O' 
         remaining = round(cooldown_period - elapsed_time, 1)
         status_text = f"HOLDING... {remaining}s (Area: {area})"
         text_color = (255, 165, 0) # 오렌지색 (대기 중)
 
-    # TODO: 상태가 이전 상태와 다르면 아두이노에 명령 전송
     if current_status != prev_status:
         ser.write(current_status.encode()) # 'O' 또는 'C' 전송
         print(f"전송된 명령: {current_status} (면적: {area})")
         
-        # 'O'를 보낼 때만 쿨다운 타이머 시작
         if current_status == 'O':
             last_command_time = time.time()
             
         prev_status = current_status
 
-    # TODO: 현재 상태를 화면에 표시
     cv.putText(frame, status_text, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, text_color, 2)
     cv.imshow("frame", frame)
 
-    # TODO: 'q' 키 입력 시 루프 종료
     if cv.waitKey(1) & 0xFF == ord('q'):
         break
 
-# TODO: 리소스 해제 
 cap.release()
 cv.destroyAllWindows()
-ser.close() # 시리얼 포트 해제
+ser.close() 
 print("프로그램 종료")
+
+
+'''
+# step2_servo_control_improved.py
+# REFACTOR 2 — 성능 분석 및 안정성 강화
+- [ ] 개선 1: FPS 표시로 시스템 성능 모니터링
+- [ ] 개선 2: 반응 시간 기록으로 성능 분석
+- [ ] 개선 3: 여러 색상을 동시에 감지
+확인 포인트
+- [ ] FPS가 표시되는가?
+- [ ] 반응 시간이 기록되는가?
+- [ ] 여러 색상이 동시에 감지되는가?
+'''
