@@ -84,7 +84,7 @@ while True:
     v_max = cv.getTrackbarPos("V_max", "trackbar")
     lower_color = np.array([h_min, s_min, v_min])
     upper_color = np.array([h_max, s_max, v_max])
-
+    
     # --- ROI 영역 처리 ---
     img_roi = frame
     if isDragging:
@@ -97,9 +97,24 @@ while True:
         # 설정된 ROI 사각형 파란색으로 표시
         cv.rectangle(frame, (x1, y1), (x2, y2), blue, 2)
     
-    # 색상 감지 (ROI가 설정되어 있다면 해당 영역만 처리)
+    # 색상 감지 (H 범위를 초과하는 경우를 대비한 예외 처리 포함)
     hsv = cv.cvtColor(img_roi, cv.COLOR_BGR2HSV)
-    mask = cv.inRange(hsv, lower_color, upper_color)
+    if lower_color[0] > upper_color[0]:
+        # H 수치가 순환하는 경우 (H_min > H_max, 주로 빨간색 범위 제어 시)
+        # 1. H_min ~ 180 범위 감지
+        lower_red = np.array([lower_color[0], lower_color[1], lower_color[2]])
+        upper_red = np.array([180, upper_color[1], upper_color[2]])
+        
+        # 2. 0 ~ H_max 범위 감지
+        lower_red2 = np.array([0, lower_color[1], lower_color[2]])
+        upper_red2 = np.array([upper_color[0], upper_color[1], upper_color[2]])
+        
+        mask1 = cv.inRange(hsv, lower_red, upper_red)
+        mask2 = cv.inRange(hsv, lower_red2, upper_red2)
+        mask = cv.bitwise_or(mask1, mask2)
+    else:
+        # 일반적인 경우 (H_min <= H_max)
+        mask = cv.inRange(hsv, lower_color, upper_color)
 
     # TODO: 모폴로지 Opening 연산으로 노이즈 제거
     raw_mask = mask.copy()  # 노이즈 제거 전 비교를 위한 디버깅 코드
