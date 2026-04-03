@@ -18,7 +18,6 @@
 import cv2 as cv
 import numpy as np  
 
-
 cap = cv.VideoCapture(0)
 if not cap.isOpened():
     print("camera not detected")
@@ -44,13 +43,17 @@ while True:
     mask = cv.inRange(hsv, lower_color, upper_color)
     # TODO: 마스크 픽셀 면적 계산
     area = cv.countNonZero(mask)
-    # TODO: 면적과 임계값 비교하여 상태 결정
+    # TODO: 면적과 임계값 비교하여 상태 결정 및 화면 표시
     if area > area_threshold:
-        print("DETECTED")
-        print("면적:", area)
+        status_text = f"DETECTED (Area: {area})"
+        text_color = (0, 255, 0) # 초록색
     else:
-        print("NOT DETECTED")
-        print("면적:", area)
+        status_text = f"NOT DETECTED (Area: {area})"
+        text_color = (0, 0, 255) # 빨간색
+
+    # 화면에 텍스트 출력 (좌상단 (10, 30) 위치)
+    cv.putText(frame, status_text, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.7, text_color, 2)
+
     # TODO: 상태를 터미널과 화면에 표시
     cv.imshow("frame", frame)
     cv.imshow("mask", mask)
