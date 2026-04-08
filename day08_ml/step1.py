@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 from sampledownload import get_sample
+
 # ① 이미지 로드 ---
 K = 4  # 클러스터 개수 (16가지 색상으로 압축)
 img = cv2.imread(get_sample('pikachu.png', repo='insightbook'))
