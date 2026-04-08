@@ -2,6 +2,7 @@ import cv2
 import urllib.request
 import numpy as np
 from sampledownload import get_sample
+
 # 방법 1: 강사 제공 샘플 이미지 사용
 img = cv2.imread(get_sample('messi5.jpg', repo='opencv'))
 # 방법 2: 인터넷에서 다운로드
