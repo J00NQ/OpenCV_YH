@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import mnist
+
 # ① 훈련 데이터와 테스트 데이터 로드 ---
 train, train_labels = mnist.getTrain()
 test, test_labels = mnist.getTest()
