@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+
 #STEP 4-1
 # HOG 디스크립터 설정
 hog = cv2.HOGDescriptor()
